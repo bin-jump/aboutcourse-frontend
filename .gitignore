@@ -1,0 +1,15 @@
+dist/
+*.swp
+.idea/
+.vs/
+.vscode/
+.DS_Store
+
+.DS_*
+*.log
+logs
+**/*.backup.*
+**/*.back.*
+
+node_modules
+build
