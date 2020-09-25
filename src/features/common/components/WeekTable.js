@@ -5,6 +5,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { getWeek, getWeekNames } from '../util';
 import './WeekTable.less';
@@ -167,11 +168,20 @@ export default function WeekTable(props) {
                 {body.map((row, i) => (
                   <TableRow key={i}>
                     <TableCell
+                      align="center"
                       style={{
+                        verticalAlign: 'top',
                         borderBottom: 'none',
+                        padding: 1,
                       }}
                     >
-                      {i}
+                      <Typography
+                        variant="body2"
+                        gutterBottom
+                        style={{ marginTop: -10, color: '#cad4da' }}
+                      >
+                        {i > 0 ? `${i}:00` : null}
+                      </Typography>
                     </TableCell>
                     {row.map((d, j) => (
                       <TableCell
