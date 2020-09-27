@@ -17,7 +17,6 @@ const getWeekStart = (date) => {
 
 const genWeekDates = (date) => {
   let res = [];
-  console.log(date);
   [...Array(7).keys()].forEach((i) => {
     res.push(new Date(date.getFullYear(), date.getMonth(), date.getDate() + i));
   });
@@ -25,43 +24,70 @@ const genWeekDates = (date) => {
   return res;
 };
 
-function WeekCell(props) {
-  const { date } = { ...props };
-
-  return (
-    <div style={{ height: 120, background: 'grey' }}>{`${
-      date.getMonth() + 1
-    }/${date.getDate()}`}</div>
-  );
-}
-
 export default function WeekTable(props) {
-  const {} = { ...props };
+  const { bodyHeight, weekDate } = { ...props };
 
   let tasks = [
+    {
+      start: new Date(new Date().getFullYear(), 8, 22, 10, 0),
+      end: new Date(new Date().getFullYear(), 8, 22, 12, 20),
+    },
     {
       start: new Date(new Date().getFullYear(), 8, 25, 10, 0),
       end: new Date(new Date().getFullYear(), 8, 25, 12, 20),
     },
+    {
+      start: new Date(new Date().getFullYear(), 8, 27, 8, 0),
+      end: new Date(new Date().getFullYear(), 8, 27, 11, 30),
+    },
   ];
-  const config = { cellHeight: 60, cellWidth: 120, timeWidth: 70 };
-  const headDates = genWeekDates(getWeekStart(new Date()));
+  const config = { cellHeight: 60, cellWidth: 120, timeWidth: 70, colSpace: 1 };
+  const weekStart = getWeekStart(weekDate || new Date());
+  const weekEnd = new Date(weekStart.getTime() + 7 * 60000 * 60 * 24);
+  const headDates = genWeekDates(weekStart);
   const weekNames = getWeekNames();
 
+  const validTask = (task) => {
+    return weekStart.getTime() <= task.start.getTime() < weekEnd.getTime();
+  };
+
+  const filterTasks = (tasks) => {
+    return tasks.filter((t) => validTask(t));
+  };
+
   const makeDateHead = (date) => {
-    return `${date.getMonth() + 1}/${date.getDate()} (${
-      weekNames[getWeek(date)]
-    })`;
+    let today = new Date().getDay() == date.getDay();
+    return (
+      <div style={{ display: 'flex' }}>
+        <Typography
+          variant="subtitle1"
+          style={{
+            padding: '0 5px',
+            fontWeight: 'bold',
+            marginRight: 5,
+            background: today ? '#dafbeb' : null,
+            color: today ? '#61e9a3' : null,
+            borderRadius: 12,
+          }}
+        >
+          {`${date.getMonth() + 1}/${date.getDate()}`}
+        </Typography>
+        <Typography variant="subtitle1">{`${
+          weekNames[getWeek(date)]
+        }`}</Typography>
+      </div>
+    );
   };
 
   const resolveY = (start) => {
-    let ht = config.cellHeight + start.getHours() * config.cellHeight;
+    let ht = start.getHours() * config.cellHeight;
     ht += Math.ceil((start.getMinutes() * config.cellHeight) / 60);
     return ht;
   };
 
   const resolveX = (start) => {
     let w = config.timeWidth + getWeek(start) * config.cellWidth;
+    //w -= config.colSpace * getWeek(start) * 2;
     return w;
   };
 
@@ -73,16 +99,16 @@ export default function WeekTable(props) {
   const resolveH = (start, end) => {
     // end should not exceed current day
     end = new Date(
-      Math.min.apply(null, [
-        end,
+      Math.min(
+        end.getTime(),
         new Date(
           start.getFullYear(),
           start.getMonth(),
           start.getDate(),
           23,
           59,
-        ),
-      ]),
+        ).getTime(),
+      ),
     );
     let diff = Math.ceil(Math.abs(start - end) / 60000);
     return Math.ceil((diff * config.cellHeight) / 60);
@@ -99,35 +125,38 @@ export default function WeekTable(props) {
 
   return (
     <div>
-      <div style={{ display: 'flex', backgroundColor: 'white' }}>
-        {/* <TableContainer className="common-weektable-time" style={{ width: 80 }}>
+      <div style={{ backgroundColor: 'white' }}>
+        <TableContainer className="common-weektable">
           <Table aria-label="simple table">
-            <TableHead style={{ backgroundColor: '#f5f6f8' }}>
+            <TableHead>
               <TableRow style={{ height: config.cellHeight }}>
-                <TableCell style={{ borderBottom: 'none' }}></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {[...Array(24).keys()].map((i) => (
-                <TableRow align="center" style={{ height: config.cellHeight }}>
+                <TableCell
+                  style={{
+                    borderBottom: 'none',
+                    width: config.timeWidth,
+                  }}
+                ></TableCell>
+                {headDates.map((item) => (
                   <TableCell
                     align="center"
                     style={{
-                      height: config.cellHeight,
+                      width: config.cellWidth,
                       borderBottom: 'none',
-                      valign: 'top',
                     }}
                   >
-                    {i}
+                    {makeDateHead(item)}
                   </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+                ))}
+              </TableRow>
+            </TableHead>
           </Table>
-        </TableContainer> */}
-        <div className="common-table-container">
+        </TableContainer>
+        <div
+          className="common-table-container"
+          style={{ height: bodyHeight ? bodyHeight : null }}
+        >
           {/* task list */}
-          {tasks.map((item) => (
+          {filterTasks(tasks).map((item) => (
             <div
               className="common-task-base"
               style={{
@@ -140,30 +169,8 @@ export default function WeekTable(props) {
               task
             </div>
           ))}
-
           <TableContainer className="common-weektable">
             <Table aria-label="simple table">
-              <TableHead>
-                <TableRow style={{ height: config.cellHeight }}>
-                  <TableCell
-                    style={{
-                      borderBottom: 'none',
-                      width: config.timeWidth,
-                    }}
-                  ></TableCell>
-                  {headDates.map((item) => (
-                    <TableCell
-                      align="center"
-                      style={{
-                        width: config.cellWidth,
-                        borderBottom: 'none',
-                      }}
-                    >
-                      {makeDateHead(item)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
               <TableBody>
                 {body.map((row, i) => (
                   <TableRow key={i}>
@@ -172,6 +179,7 @@ export default function WeekTable(props) {
                       style={{
                         verticalAlign: 'top',
                         borderBottom: 'none',
+                        width: config.timeWidth,
                         padding: 1,
                       }}
                     >

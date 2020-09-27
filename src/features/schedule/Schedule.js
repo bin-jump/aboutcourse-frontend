@@ -8,7 +8,7 @@ export default function Schedule(props) {
       <div>up</div>
       <div style={{ display: 'flex' }}>
         <div>SPACE</div>
-        <WeekTable />
+        <WeekTable bodyHeight={300} />
       </div>
     </div>
   );
