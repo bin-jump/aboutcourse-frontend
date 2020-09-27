@@ -6,7 +6,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { getWeekNames } from '../util';
+import { getWeekNames } from '../../common/util';
 
 const genWeekDate = (year, mon) => {
   let start = new Date(`${year}-${mon}-01`);

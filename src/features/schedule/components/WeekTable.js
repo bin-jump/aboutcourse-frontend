@@ -6,8 +6,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import { getWeek, getWeekNames } from '../util';
+import { getWeek, getWeekNames } from '../../common/util';
 import './WeekTable.less';
 
 const getWeekStart = (date) => {
@@ -25,22 +24,10 @@ const genWeekDates = (date) => {
 };
 
 export default function WeekTable(props) {
-  const { bodyHeight, weekDate } = { ...props };
+  const { bodyHeight, weekDate, tasks } = { ...props };
 
-  let tasks = [
-    {
-      start: new Date(new Date().getFullYear(), 8, 22, 10, 0),
-      end: new Date(new Date().getFullYear(), 8, 22, 12, 20),
-    },
-    {
-      start: new Date(new Date().getFullYear(), 8, 25, 10, 0),
-      end: new Date(new Date().getFullYear(), 8, 25, 12, 20),
-    },
-    {
-      start: new Date(new Date().getFullYear(), 8, 27, 8, 0),
-      end: new Date(new Date().getFullYear(), 8, 27, 11, 30),
-    },
-  ];
+  let taskList = tasks || [];
+
   const config = { cellHeight: 60, cellWidth: 120, timeWidth: 70, colSpace: 1 };
   const weekStart = getWeekStart(weekDate || new Date());
   const weekEnd = new Date(weekStart.getTime() + 7 * 60000 * 60 * 24);
@@ -48,7 +35,10 @@ export default function WeekTable(props) {
   const weekNames = getWeekNames();
 
   const validTask = (task) => {
-    return weekStart.getTime() <= task.start.getTime() < weekEnd.getTime();
+    return (
+      weekStart.getTime() <= task.start.getTime() &&
+      task.start.getTime() < weekEnd.getTime()
+    );
   };
 
   const filterTasks = (tasks) => {
@@ -56,7 +46,11 @@ export default function WeekTable(props) {
   };
 
   const makeDateHead = (date) => {
-    let today = new Date().getDay() == date.getDay();
+    let today = new Date();
+    let isToday =
+      today.getFullYear() == date.getFullYear() &&
+      today.getMonth() == date.getMonth() &&
+      today.getDate() == date.getDate();
     return (
       <div style={{ display: 'flex' }}>
         <Typography
@@ -65,8 +59,8 @@ export default function WeekTable(props) {
             padding: '0 5px',
             fontWeight: 'bold',
             marginRight: 5,
-            background: today ? '#dafbeb' : null,
-            color: today ? '#61e9a3' : null,
+            background: isToday ? '#dafbeb' : null,
+            color: isToday ? '#61e9a3' : null,
             borderRadius: 12,
           }}
         >
@@ -124,7 +118,7 @@ export default function WeekTable(props) {
   const body = makeBody();
 
   return (
-    <div>
+    <div style={{ width: 'max-content' }}>
       <div style={{ backgroundColor: 'white' }}>
         <TableContainer className="common-weektable">
           <Table aria-label="simple table">
@@ -156,7 +150,7 @@ export default function WeekTable(props) {
           style={{ height: bodyHeight ? bodyHeight : null }}
         >
           {/* task list */}
-          {filterTasks(tasks).map((item) => (
+          {filterTasks(taskList).map((item) => (
             <div
               className="common-task-base"
               style={{
