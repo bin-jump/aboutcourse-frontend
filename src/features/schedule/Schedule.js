@@ -5,11 +5,7 @@ import WeekTable from '../common/components/WeekTable';
 export default function Schedule(props) {
   return (
     <div>
-      <div>up</div>
-      <div style={{ display: 'flex' }}>
-        <div>SPACE</div>
-        <WeekTable bodyHeight={300} />
-      </div>
+      <WeekTable bodyHeight={300} />
     </div>
   );
 }

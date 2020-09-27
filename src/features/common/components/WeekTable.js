@@ -198,6 +198,8 @@ export default function WeekTable(props) {
                           borderLeft: j > 0 ? 'solid 1px #e1e5e9' : '',
                           height: config.cellHeight,
                           width: config.cellWidth,
+                          borderBottom: 'none',
+                          borderTop: i > 0 ? 'solid 1px #e1e5e9' : 'none',
                         }}
                       ></TableCell>
                     ))}
