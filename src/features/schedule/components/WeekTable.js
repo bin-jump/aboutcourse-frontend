@@ -28,7 +28,7 @@ export default function WeekTable(props) {
 
   let taskList = tasks || [];
 
-  const config = { cellHeight: 60, cellWidth: 120, timeWidth: 70, colSpace: 1 };
+  const config = { cellHeight: 60, cellWidth: 100, timeWidth: 70, colSpace: 1 };
   const weekStart = getWeekStart(weekDate || new Date());
   const weekEnd = new Date(weekStart.getTime() + 7 * 60000 * 60 * 24);
   const headDates = genWeekDates(weekStart);
@@ -118,91 +118,89 @@ export default function WeekTable(props) {
   const body = makeBody();
 
   return (
-    <div style={{ width: 'max-content' }}>
-      <div style={{ backgroundColor: 'white' }}>
+    <div className="common-weektable-root">
+      <TableContainer className="common-weektable">
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow style={{ height: config.cellHeight }}>
+              <TableCell
+                style={{
+                  borderBottom: 'none',
+                  width: config.timeWidth,
+                }}
+              ></TableCell>
+              {headDates.map((item) => (
+                <TableCell
+                  align="center"
+                  style={{
+                    width: config.cellWidth,
+                    borderBottom: 'none',
+                  }}
+                >
+                  {makeDateHead(item)}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+        </Table>
+      </TableContainer>
+      <div
+        className="common-table-container"
+        style={{ height: bodyHeight ? bodyHeight : null }}
+      >
+        {/* task list */}
+        {filterTasks(taskList).map((item) => (
+          <div
+            className="common-task-base"
+            style={{
+              top: resolveY(item.start),
+              left: resolveX(item.start),
+              height: resolveH(item.start, item.end),
+              width: resolveW(item.start),
+            }}
+          >
+            task
+          </div>
+        ))}
         <TableContainer className="common-weektable">
           <Table aria-label="simple table">
-            <TableHead>
-              <TableRow style={{ height: config.cellHeight }}>
-                <TableCell
-                  style={{
-                    borderBottom: 'none',
-                    width: config.timeWidth,
-                  }}
-                ></TableCell>
-                {headDates.map((item) => (
+            <TableBody>
+              {body.map((row, i) => (
+                <TableRow key={i}>
                   <TableCell
                     align="center"
                     style={{
-                      width: config.cellWidth,
+                      verticalAlign: 'top',
                       borderBottom: 'none',
+                      width: config.timeWidth,
+                      padding: 1,
                     }}
                   >
-                    {makeDateHead(item)}
+                    <Typography
+                      variant="body2"
+                      gutterBottom
+                      style={{ marginTop: -10, color: '#cad4da' }}
+                    >
+                      {i > 0 ? `${i}:00` : null}
+                    </Typography>
                   </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-          </Table>
-        </TableContainer>
-        <div
-          className="common-table-container"
-          style={{ height: bodyHeight ? bodyHeight : null }}
-        >
-          {/* task list */}
-          {filterTasks(taskList).map((item) => (
-            <div
-              className="common-task-base"
-              style={{
-                top: resolveY(item.start),
-                left: resolveX(item.start),
-                height: resolveH(item.start, item.end),
-                width: resolveW(item.start),
-              }}
-            >
-              task
-            </div>
-          ))}
-          <TableContainer className="common-weektable">
-            <Table aria-label="simple table">
-              <TableBody>
-                {body.map((row, i) => (
-                  <TableRow key={i}>
+                  {row.map((d, j) => (
                     <TableCell
                       align="center"
                       style={{
-                        verticalAlign: 'top',
+                        borderLeft: j > 0 ? 'solid 1px #e1e5e9' : '',
+                        height: config.cellHeight,
+                        width: config.cellWidth,
                         borderBottom: 'none',
-                        width: config.timeWidth,
-                        padding: 1,
+                        borderTop: i > 0 ? 'solid 1px #e1e5e9' : 'none',
                       }}
-                    >
-                      <Typography
-                        variant="body2"
-                        gutterBottom
-                        style={{ marginTop: -10, color: '#cad4da' }}
-                      >
-                        {i > 0 ? `${i}:00` : null}
-                      </Typography>
-                    </TableCell>
-                    {row.map((d, j) => (
-                      <TableCell
-                        align="center"
-                        style={{
-                          borderLeft: j > 0 ? 'solid 1px #e1e5e9' : '',
-                          height: config.cellHeight,
-                          width: config.cellWidth,
-                          borderBottom: 'none',
-                          borderTop: i > 0 ? 'solid 1px #e1e5e9' : 'none',
-                        }}
-                      ></TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
+                    ></TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
     </div>
   );

@@ -9,22 +9,38 @@ import Account from './features/account/Account';
 import Lecture from './features/lecture/Lecture';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#133d4b',
+      light: '#0ee37d',
+    },
+    secondary: {
+      main: '#0ee37d',
+      light: '#ffffff',
+    },
+  },
+  status: {
+    danger: 'orange',
+  },
+});
+
 export default function App() {
   return (
     <div>
       <div className="app-container">
         <Router history={history}>
           <Container>
-            {/* <MuiThemeProvider>
-          <Provider store={store}> */}
+            <MuiThemeProvider theme={theme}>
+              {/* <Provider store={store}> */}
 
-            <Route path="/" exact component={Schedule} />
-            <Route path="/account" exact component={Account} />
-            <Route path="/lecture" exact component={Lecture} />
+              <Route path="/" exact component={Schedule} />
+              <Route path="/account" exact component={Account} />
+              <Route path="/lecture" exact component={Lecture} />
 
-            <CssBaseline />
-            {/* </Provider>
-        </MuiThemeProvider> */}
+              <CssBaseline />
+              {/* </Provider> */}
+            </MuiThemeProvider>
           </Container>
         </Router>
       </div>

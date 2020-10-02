@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import NewTask from './NewTask';
 import WeekTable from './WeekTable';
 import { getMonthNames } from '../../common/util';
 import './TaskCalendar.less';
@@ -35,19 +37,20 @@ export default function TaskCalendar(props) {
   const [curDate, setCurDate] = useState(
     new Date(curTime.getFullYear(), curTime.getMonth(), curTime.getDate()),
   );
+  const [open, setOpen] = useState(false);
 
   const tasks = [
     {
-      start: new Date(new Date().getFullYear(), 8, 22, 10, 0),
-      end: new Date(new Date().getFullYear(), 8, 22, 12, 20),
+      start: new Date(new Date().getFullYear(), 8, 29, 10, 0),
+      end: new Date(new Date().getFullYear(), 8, 29, 12, 20),
     },
     {
-      start: new Date(new Date().getFullYear(), 8, 25, 10, 0),
-      end: new Date(new Date().getFullYear(), 8, 25, 12, 20),
+      start: new Date(new Date().getFullYear(), 8, 30, 10, 0),
+      end: new Date(new Date().getFullYear(), 8, 30, 12, 20),
     },
     {
-      start: new Date(new Date().getFullYear(), 8, 27, 8, 0),
-      end: new Date(new Date().getFullYear(), 8, 27, 11, 30),
+      start: new Date(new Date().getFullYear(), 9, 2, 8, 0),
+      end: new Date(new Date().getFullYear(), 9, 2, 11, 30),
     },
   ];
 
@@ -61,12 +64,20 @@ export default function TaskCalendar(props) {
     setCurDate(new Date(newDate));
   };
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div>
       <Paper square>
         <Grid container>
-          <Grid item xs={5} />
-          <Grid item xs={2} className="feature-schedule-cal-title">
+          <Grid item xs={4} />
+          <Grid item xs={3} className="feature-schedule-cal-title">
             <div style={{ display: 'flex' }}>
               <Typography
                 variant="h6"
@@ -77,8 +88,8 @@ export default function TaskCalendar(props) {
               <Typography variant="h6">{curDate.getFullYear()}</Typography>
             </div>
           </Grid>
-          <Grid item xs={3} />
-          <Grid item xs={1}>
+          <Grid item xs={1} />
+          <Grid item xs={3}>
             <div style={{ display: 'flex' }}>
               <Button onClick={(e) => setCurDate(curTime)}>Today</Button>
               <IconButton onClick={(e) => decreaseWeek()}>
@@ -89,11 +100,19 @@ export default function TaskCalendar(props) {
               </IconButton>
             </div>
           </Grid>
-          <Grid item xs={1} />
+          <Grid item xs={1}>
+            <IconButton aria-label="add" onClick={handleClickOpen}>
+              <AddCircleIcon />
+            </IconButton>
+          </Grid>
         </Grid>
-
         <WeekTable weekDate={curDate} tasks={tasks} bodyHeight={300} />
       </Paper>
+      <NewTask
+        open={open}
+        handleClickOpen={handleClickOpen}
+        handleClose={handleClose}
+      />
     </div>
   );
 }

@@ -14,20 +14,22 @@ export default function Side(props) {
     <div className="frame-side">
       <Button component={Link} to="/">
         <div className="frame-side-iconcontainer">
-          <ListAltIcon fontSize="large" className="frame-side-icon" />
+          <ListAltIcon className="frame-side-icon" />
           <Typography variant="caption">Schedule</Typography>
         </div>
       </Button>
       <Button component={Link} to="/account">
         <div className="frame-side-iconcontainer">
-          <AccountBoxIcon fontSize="large" className="frame-side-icon" />
+          <AccountBoxIcon className="frame-side-icon" />
           <Typography variant="caption">Account</Typography>
         </div>
       </Button>
       <Button component={Link} to="/lecture">
         <div className="frame-side-iconcontainer">
-          <AccountBalanceIcon fontSize="large" className="frame-side-icon" />
-          <Typography variant="caption">Lecture</Typography>
+          <AccountBalanceIcon className="frame-side-icon" />
+          <Typography variant="caption" display="block" gutterBottom>
+            Lecture
+          </Typography>
         </div>
       </Button>
     </div>
