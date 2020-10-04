@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -7,6 +6,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -15,14 +16,17 @@ import Chip from '@material-ui/core/Chip';
 import {
   MuiPickersUtilsProvider,
   KeyboardDateTimePicker,
+  KeyboardDatePicker,
+  KeyboardTimePicker,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
+import { getWeek, getWeekNames } from '../../common/util';
 import './NewTask.less';
 
-const initDate = () => {
+export const initDate = () => {
   let d = new Date();
   d.setMinutes(0);
   return d;
@@ -35,7 +39,10 @@ export default function NewTask(props) {
     title: '',
     startDate: initDate(),
     dueDate: initDate(),
-    repeat: 'None',
+    startTime: initDate(),
+    endTime: initDate(),
+    period: false,
+    repeat: '',
     tags: [],
     info: '',
   });
@@ -48,7 +55,7 @@ export default function NewTask(props) {
   };
 
   const handleTagAdd = (label) => {
-    if (task.tags.filter((e) => e.label === label).length > 0) {
+    if (task.tags.filter((e) => e.label === label).length > 0 || !label) {
       return;
     }
     let newList = [{ label }, ...task.tags];
@@ -86,23 +93,41 @@ export default function NewTask(props) {
               <TextField
                 id="standard-basic"
                 label="Title"
+                value={task.title}
+                onChange={(e) => setTask({ ...task, title: e.target.value })}
                 style={{ width: '100%' }}
               />
             </div>
             <div className="schedule-newtask-item">
+              <FormControlLabel
+                control={<Checkbox value={task.period} color="primary" />}
+                label="Perioded"
+                labelPlacement="start"
+                style={{ marginRight: 30 }}
+                onChange={(e) => setTask({ ...task, period: !task.period })}
+              />
               <DatePicker
-                lable={'Start'}
+                lable={
+                  task.period
+                    ? 'Start'
+                    : `Day(${getWeekNames()[getWeek(task.startDate)]})`
+                }
                 date={task.startDate}
                 handleDateChange={handleStartDateChange}
                 style={{ float: 'left' }}
               />
-              <div style={{ margin: 'auto' }}></div>
-              <DatePicker
-                lable={'End'}
-                date={task.dueDate}
-                handleDateChange={handleDueDateChange}
-                style={{ float: 'right' }}
-              />
+              {task.period ? (
+                <>
+                  <div style={{ margin: 'auto' }}>~</div>
+                  <DatePicker
+                    disabled={!task.period}
+                    lable={'End'}
+                    date={task.dueDate}
+                    handleDateChange={handleDueDateChange}
+                    style={{ float: 'right' }}
+                  />
+                </>
+              ) : null}
             </div>
             <div className="schedule-newtask-item">
               <FormControl>
@@ -110,17 +135,28 @@ export default function NewTask(props) {
                 <Select
                   value={task.repeat}
                   onChange={handleRepeatChange}
-                  style={{ width: 140 }}
+                  style={{ width: 120, marginRight: 30, marginBottom: 10 }}
                 >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
+                  <MenuItem value="">{'None'}</MenuItem>
                   {repeatList.map((item, i) => (
                     <MenuItem value={item}>{item}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
+              <TimePicker
+                lable={'Start'}
+                date={task.startTime}
+                handleTimeChange={(d) => setTask({ ...task, startTime: d })}
+              />
+              <div style={{ margin: 'auto' }}>~</div>
+              <TimePicker
+                lable={'Start'}
+                style={{ float: 'right' }}
+                date={task.endTime}
+                handleTimeChange={(d) => setTask({ ...task, endTime: d })}
+              />
             </div>
+            <div className="schedule-newtask-item"></div>
             <div className="schedule-newtask-item">
               <TextField
                 label="tag name"
@@ -139,10 +175,10 @@ export default function NewTask(props) {
                 Add
               </Button>
             </div>
-            <div className="schedule-newtask-item">
+            <div className="schedule-newtask-item" style={{ display: 'block' }}>
               {task.tags.map((data) => (
                 <Chip
-                  style={{ marginRight: 12 }}
+                  style={{ marginRight: 12, marginBottom: 8 }}
                   variant="outlined"
                   color="secondary"
                   label={data.label}
@@ -176,21 +212,44 @@ export default function NewTask(props) {
   );
 }
 
-function DatePicker(props) {
-  const { date, handleDateChange, lable } = { ...props };
+export function TimePicker(props) {
+  const { date, handleTimeChange, lable, disabled, style } = { ...props };
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <div style={{ width: 190 }}>
-        <KeyboardDateTimePicker
+      <div style={{ width: 120, ...style }}>
+        <KeyboardTimePicker
+          disabled={disabled}
+          variant="inline"
+          ampm={false}
+          label={lable}
+          value={date}
+          onChange={handleTimeChange}
+          //disablePast
+          mask="__:__ _M"
+          minutesStep={5}
+        />
+      </div>
+    </MuiPickersUtilsProvider>
+  );
+}
+
+export function DatePicker(props) {
+  const { date, handleDateChange, lable, disabled } = { ...props };
+
+  return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <div style={{ width: 140 }}>
+        <KeyboardDatePicker
+          disabled={disabled}
           variant="inline"
           ampm={false}
           label={lable}
           value={date}
           onChange={handleDateChange}
           //disablePast
-          format="yyyy/MM/dd HH:mm"
-          minutesStep={5}
+          format="yyyy/MM/dd"
+          //minutesStep={5}
         />
       </div>
     </MuiPickersUtilsProvider>

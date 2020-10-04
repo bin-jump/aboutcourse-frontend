@@ -8,6 +8,7 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import NewTask from './NewTask';
+import NewLecture from './NewLecture';
 import WeekTable from './WeekTable';
 import { getMonthNames } from '../../common/util';
 import './TaskCalendar.less';
@@ -38,6 +39,7 @@ export default function TaskCalendar(props) {
     new Date(curTime.getFullYear(), curTime.getMonth(), curTime.getDate()),
   );
   const [open, setOpen] = useState(false);
+  const [openNewLecture, setOpenNewLecture] = useState(false);
 
   const tasks = [
     {
@@ -72,6 +74,14 @@ export default function TaskCalendar(props) {
     setOpen(false);
   };
 
+  const handleLectureOpen = () => {
+    setOpenNewLecture(true);
+  };
+
+  const handleLectureClose = () => {
+    setOpenNewLecture(false);
+  };
+
   return (
     <div>
       <Paper square>
@@ -88,8 +98,7 @@ export default function TaskCalendar(props) {
               <Typography variant="h6">{curDate.getFullYear()}</Typography>
             </div>
           </Grid>
-          <Grid item xs={1} />
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <div style={{ display: 'flex' }}>
               <Button onClick={(e) => setCurDate(curTime)}>Today</Button>
               <IconButton onClick={(e) => decreaseWeek()}>
@@ -100,8 +109,12 @@ export default function TaskCalendar(props) {
               </IconButton>
             </div>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={1} />
+          <Grid item xs={2}>
             <IconButton aria-label="add" onClick={handleClickOpen}>
+              <AddCircleIcon />
+            </IconButton>
+            <IconButton aria-label="add" onClick={handleLectureOpen}>
               <AddCircleIcon />
             </IconButton>
           </Grid>
@@ -112,6 +125,11 @@ export default function TaskCalendar(props) {
         open={open}
         handleClickOpen={handleClickOpen}
         handleClose={handleClose}
+      />
+      <NewLecture
+        open={openNewLecture}
+        handleClickOpen={handleLectureOpen}
+        handleClose={handleLectureClose}
       />
     </div>
   );
