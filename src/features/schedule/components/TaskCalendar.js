@@ -34,27 +34,14 @@ const prevMonth = (date) => {
 };
 
 export default function TaskCalendar(props) {
+  const { tasks } = { ...props };
+
   const curTime = new Date();
   const [curDate, setCurDate] = useState(
     new Date(curTime.getFullYear(), curTime.getMonth(), curTime.getDate()),
   );
   const [open, setOpen] = useState(false);
   const [openNewLecture, setOpenNewLecture] = useState(false);
-
-  const tasks = [
-    {
-      start: new Date(new Date().getFullYear(), 8, 29, 10, 0),
-      end: new Date(new Date().getFullYear(), 8, 29, 12, 20),
-    },
-    {
-      start: new Date(new Date().getFullYear(), 8, 30, 10, 0),
-      end: new Date(new Date().getFullYear(), 8, 30, 12, 20),
-    },
-    {
-      start: new Date(new Date().getFullYear(), 9, 2, 8, 0),
-      end: new Date(new Date().getFullYear(), 9, 2, 11, 30),
-    },
-  ];
 
   const increaseWeek = () => {
     let newDate = curDate.getTime() + 1000 * 3600 * 24 * 7;
@@ -80,6 +67,36 @@ export default function TaskCalendar(props) {
 
   const handleLectureClose = () => {
     setOpenNewLecture(false);
+  };
+
+  const makeCalenderTasks = (tasks) => {
+    let res = [];
+    for (let task of tasks) {
+      let item = {};
+      if (task.taskType == 'TASK') {
+        item = {
+          id: task.id,
+          weekly: false,
+          title: task.title,
+          day: task.startDate,
+          startTime: task.startTime,
+          endTime: task.endTime,
+        };
+      } else if (task.taskType == 'LECTURE') {
+        for (let interval of task.intervals) {
+          item = {
+            id: task.id,
+            weekly: true,
+            title: task.title,
+            day: interval.day,
+            startTime: interval.startTime,
+            endTime: interval.endTime,
+          };
+        }
+      }
+      res.push(item);
+    }
+    return res;
   };
 
   return (
@@ -119,7 +136,11 @@ export default function TaskCalendar(props) {
             </IconButton>
           </Grid>
         </Grid>
-        <WeekTable weekDate={curDate} tasks={tasks} bodyHeight={300} />
+        <WeekTable
+          weekDate={curDate}
+          tasks={makeCalenderTasks(tasks)}
+          bodyHeight={300}
+        />
       </Paper>
       <NewTask
         open={open}

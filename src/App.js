@@ -1,5 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
+import store from './common/store';
 import { Router, Route } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import history from './common/history';
@@ -32,14 +33,13 @@ export default function App() {
         <Router history={history}>
           <Container>
             <MuiThemeProvider theme={theme}>
-              {/* <Provider store={store}> */}
+              <Provider store={store}>
+                <Route path="/" exact component={Schedule} />
+                <Route path="/account" exact component={Account} />
+                <Route path="/lecture" exact component={Lecture} />
 
-              <Route path="/" exact component={Schedule} />
-              <Route path="/account" exact component={Account} />
-              <Route path="/lecture" exact component={Lecture} />
-
-              <CssBaseline />
-              {/* </Provider> */}
+                <CssBaseline />
+              </Provider>
             </MuiThemeProvider>
           </Container>
         </Router>

@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
+import { getMinutes } from '../../common/util';
 import './TaskList.less';
 
 function LinearProgressWithLabel(props) {
@@ -27,7 +28,7 @@ function LinearProgressWithLabel(props) {
 }
 
 export default function TaskList(props) {
-  const {} = { ...props };
+  const { tasks } = { ...props };
 
   const calProgress = (task) => {
     let cur = new Date();
@@ -38,27 +39,23 @@ export default function TaskList(props) {
   };
 
   const formatDate = (date) => {
-    return `${date.getMonth() + 1}/${date.getDate()} ${date.getFullYear()}`;
+    return `${date.getMonth() + 1}/${date.getDate()}, ${date.getFullYear()}`;
   };
 
-  const tasks = [
-    {
-      name: 'task1',
-      startDate: new Date(new Date().getFullYear(), 8, 30, 10, 0),
-      dueDate: new Date(new Date().getFullYear(), 8, 30, 12, 0),
-      status: 'started',
-      info: 'information',
-    },
-  ];
+  const formatPeriod = (task) => {
+    return !task.period
+      ? `${formatDate(task.startDate)}`
+      : `${formatDate(task.startDate)} ~ ${formatDate(task.dueDate)}`;
+  };
 
-  const header = [
-    'Task',
-    'Start Date',
-    'Due Date',
-    'Progress',
-    'Status',
-    'Info',
-  ];
+  const formatTime = (task) => {
+    if (task.taskType == 'TASK') {
+      return `${getMinutes(task.startTime)} ~ ${getMinutes(task.endTime)}`;
+    }
+    return ``;
+  };
+
+  const header = ['Task', 'Period', 'Time', 'Progress', 'Status', 'Info'];
 
   return (
     <Paper square className="feature-schedule-tasklist-container">
@@ -71,7 +68,7 @@ export default function TaskList(props) {
         <TableHead>
           <TableRow>
             {header.map((item) => (
-              <TableCell>
+              <TableCell align="center">
                 <Typography>{item}</Typography>
               </TableCell>
             ))}
@@ -80,14 +77,14 @@ export default function TaskList(props) {
         <TableBody>
           {tasks.map((item, i) => (
             <TableRow>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{formatDate(item.startDate)}</TableCell>
-              <TableCell>{formatDate(item.dueDate)}</TableCell>
-              <TableCell align="left">
+              <TableCell align="center">{item.title}</TableCell>
+              <TableCell align="center">{formatPeriod(item)}</TableCell>
+              <TableCell align="center">{formatTime(item)}</TableCell>
+              <TableCell align="center">
                 <LinearProgressWithLabel value={calProgress(item)} />
               </TableCell>
-              <TableCell>{item.status}</TableCell>
-              <TableCell>{item.info}</TableCell>
+              <TableCell align="center">{item.status}</TableCell>
+              <TableCell align="center">{item.info}</TableCell>
             </TableRow>
           ))}
         </TableBody>

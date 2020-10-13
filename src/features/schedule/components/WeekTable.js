@@ -27,6 +27,7 @@ export default function WeekTable(props) {
   const { bodyHeight, weekDate, tasks } = { ...props };
 
   let taskList = tasks || [];
+  console.log(taskList);
 
   const config = { cellHeight: 60, cellWidth: 100, timeWidth: 70, colSpace: 1 };
   const weekStart = getWeekStart(weekDate || new Date());
@@ -35,10 +36,13 @@ export default function WeekTable(props) {
   const weekNames = getWeekNames();
 
   const validTask = (task) => {
-    return (
-      weekStart.getTime() <= task.start.getTime() &&
-      task.start.getTime() < weekEnd.getTime()
-    );
+    let res =
+      task.weekly ||
+      (!task.weekly &&
+        weekStart.getTime() <= task.startTime.getTime() &&
+        task.startTime.getTime() < weekEnd.getTime());
+    console.log(res);
+    return res;
   };
 
   const filterTasks = (tasks) => {
@@ -73,24 +77,25 @@ export default function WeekTable(props) {
     );
   };
 
-  const resolveY = (start) => {
-    let ht = start.getHours() * config.cellHeight;
-    ht += Math.ceil((start.getMinutes() * config.cellHeight) / 60);
+  const resolveY = (task) => {
+    let ht = task.startTime.getHours() * config.cellHeight;
+    ht += Math.ceil((task.startTime.getMinutes() * config.cellHeight) / 60);
     return ht;
   };
 
-  const resolveX = (start) => {
-    let w = config.timeWidth + getWeek(start) * config.cellWidth;
-    //w -= config.colSpace * getWeek(start) * 2;
+  const resolveX = (task) => {
+    let week = task.weekly ? task.day : getWeek(task.startTime);
+    let w = config.timeWidth + week * config.cellWidth;
     return w;
   };
 
   // TODO: update for overlap
-  const resolveW = (d) => {
+  const resolveW = (task) => {
     return config.cellWidth;
   };
 
-  const resolveH = (start, end) => {
+  const resolveH = (task) => {
+    let [start, end] = [task.startTime, task.endTime];
     // end should not exceed current day
     end = new Date(
       Math.min(
@@ -153,10 +158,10 @@ export default function WeekTable(props) {
           <div
             className="common-task-base"
             style={{
-              top: resolveY(item.start),
-              left: resolveX(item.start),
-              height: resolveH(item.start, item.end),
-              width: resolveW(item.start),
+              top: resolveY(item),
+              left: resolveX(item),
+              height: resolveH(item),
+              width: resolveW(item),
             }}
           >
             task

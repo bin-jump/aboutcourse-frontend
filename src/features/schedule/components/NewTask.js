@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -15,7 +14,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
 import {
   MuiPickersUtilsProvider,
-  KeyboardDateTimePicker,
   KeyboardDatePicker,
   KeyboardTimePicker,
 } from '@material-ui/pickers';
@@ -24,6 +22,7 @@ import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import { getWeek, getWeekNames } from '../../common/util';
+import { useCreateTask } from '../redux/hooks';
 import './NewTask.less';
 
 export const initDate = () => {
@@ -42,12 +41,13 @@ export default function NewTask(props) {
     startTime: initDate(),
     endTime: initDate(),
     period: false,
-    repeat: '',
+    repeat: 'NONE',
     tags: [],
     info: '',
   });
 
-  const repeatList = ['Day', 'Week'];
+  const { createTask, createTaskPending } = useCreateTask();
+  const repeatList = ['NONE', 'DAY', 'WEEK'];
 
   const handleTagDelete = (chipToDelete) => {
     let newList = task.tags.filter((chip) => chip.label !== chipToDelete.label);
@@ -73,6 +73,11 @@ export default function NewTask(props) {
 
   const handleDueDateChange = (date) => {
     setTask({ ...task, dueDate: date });
+  };
+
+  const handleCreate = () => {
+    createTask(task);
+    handleClose();
   };
 
   return (
@@ -137,7 +142,6 @@ export default function NewTask(props) {
                   onChange={handleRepeatChange}
                   style={{ width: 120, marginRight: 30, marginBottom: 10 }}
                 >
-                  <MenuItem value="">{'None'}</MenuItem>
                   {repeatList.map((item, i) => (
                     <MenuItem value={item}>{item}</MenuItem>
                   ))}
@@ -203,7 +207,7 @@ export default function NewTask(props) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary" autoFocus>
+          <Button onClick={handleCreate} color="primary" autoFocus>
             Create
           </Button>
         </DialogActions>
