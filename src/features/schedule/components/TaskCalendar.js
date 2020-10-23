@@ -9,8 +9,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import NewTask from './NewTask';
 import NewLecture from './NewLecture';
-import WeekTable from './WeekTable';
-import { getMonthNames } from '../../common/util';
+import WeekTable, { getWeekStartEnd } from './WeekTable';
+import { getMonthNames, getWeek } from '../../common/util';
 import './TaskCalendar.less';
 
 const nextMonth = (date) => {
@@ -33,15 +33,26 @@ const prevMonth = (date) => {
   return res;
 };
 
-export default function TaskCalendar(props) {
-  const { tasks } = { ...props };
+const today = () => {
+  return new Date(new Date().setHours(0, 0, 0, 0));
+};
 
-  const curTime = new Date();
-  const [curDate, setCurDate] = useState(
-    new Date(curTime.getFullYear(), curTime.getMonth(), curTime.getDate()),
-  );
+export default function TaskCalendar(props) {
+  const { tasks, handleSelect, selected } = { ...props };
+
+  const [curDate, setCurDate] = useState(today());
+  const [weekStart, weekEnd] = getWeekStartEnd(curDate);
+
   const [open, setOpen] = useState(false);
   const [openNewLecture, setOpenNewLecture] = useState(false);
+
+  const currentWeekTasks = (task) => {
+    let res = !(
+      weekStart.getTime() > task.dueDate.getTime() ||
+      weekEnd.getTime() < task.startDate.getTime()
+    );
+    return res;
+  };
 
   const increaseWeek = () => {
     let newDate = curDate.getTime() + 1000 * 3600 * 24 * 7;
@@ -72,36 +83,46 @@ export default function TaskCalendar(props) {
   const makeCalenderTasks = (tasks) => {
     let res = [];
     for (let task of tasks) {
-      let item = {};
+      if (!currentWeekTasks(task)) {
+        continue;
+      }
       if (task.taskType == 'TASK') {
-        item = {
-          id: task.id,
-          weekly: false,
-          title: task.title,
-          day: task.startDate,
-          startTime: task.startTime,
-          endTime: task.endTime,
+        let item = {
+          ...task,
+          day: getWeek(task.startDate),
         };
+        if (task.repeat == 'DAY') {
+          let start =
+            task.startDate.getTime() < weekStart.getTime() ? 0 : item.day;
+          let end =
+            weekEnd.getTime() <= task.dueDate.getTime()
+              ? 6
+              : getWeek(task.dueDate);
+          [...Array(7).keys()].slice(start, end + 1).forEach((i) => {
+            item = { ...item, day: i };
+            res.push(item);
+          });
+        } else {
+          res.push(item);
+        }
       } else if (task.taskType == 'LECTURE') {
         for (let interval of task.intervals) {
-          item = {
-            id: task.id,
-            weekly: true,
-            title: task.title,
+          let item = {
+            ...task,
             day: interval.day,
-            startTime: interval.startTime,
-            endTime: interval.endTime,
+            startTime: interval.start,
+            endTime: interval.end,
           };
+          res.push(item);
         }
       }
-      res.push(item);
     }
     return res;
   };
 
   return (
     <div>
-      <Paper square>
+      <Paper square variant="outlined">
         <Grid container>
           <Grid item xs={4} />
           <Grid item xs={3} className="feature-schedule-cal-title">
@@ -117,7 +138,7 @@ export default function TaskCalendar(props) {
           </Grid>
           <Grid item xs={2}>
             <div style={{ display: 'flex' }}>
-              <Button onClick={(e) => setCurDate(curTime)}>Today</Button>
+              <Button onClick={(e) => setCurDate(today())}>Today</Button>
               <IconButton onClick={(e) => decreaseWeek()}>
                 <KeyboardArrowLeftIcon />
               </IconButton>
@@ -139,6 +160,8 @@ export default function TaskCalendar(props) {
         <WeekTable
           weekDate={curDate}
           tasks={makeCalenderTasks(tasks)}
+          handleSelect={handleSelect}
+          selected={selected}
           bodyHeight={300}
         />
       </Paper>

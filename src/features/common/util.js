@@ -28,3 +28,12 @@ export function getMonthNames() {
     'December',
   ];
 }
+
+export function toLocalTime(date) {
+  return new Date(date.getTime() + date.getTimezoneOffset());
+}
+
+export function mergeDate(a, b) {
+  let offset = a.getTimezoneOffset() * 60 * 1000;
+  return new Date(a.getTime() + b.getTime() - offset);
+}

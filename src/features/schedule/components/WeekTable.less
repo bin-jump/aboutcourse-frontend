@@ -1,4 +1,4 @@
-.common-weektable-root {
+.feature-schedule-weektable-root {
   width: max-content;
   background-color: white;
   .MuiTableCell-root {
@@ -6,27 +6,61 @@
   }
 }
 
-.common-table-container {
+.feature-schedule-table-container {
   position: relative;
   overflow: overlay;
   padding-right: 18px;
   padding-bottom: 5px;
 }
 
-.common-task-base {
+.feature-schedule-task-colored(@light; @dark) {
   position: absolute;
+  padding: 8px 5px;
   height: 100px;
-  background-color: rgba(198, 240, 244, 0.7);
-  border-left: 5px solid #89e1ea;
+  background-color: @light;
+  border-left: 5px solid @dark;
 }
 
-.common-weektable-time {
-  td {
-    valign: top;
+.feature-schedule-task-item-task {
+  .feature-schedule-task-colored(rgba(198, 240, 244, 0.7), #89e1ea);
+}
+
+.feature-schedule-task-item-lecture {
+  .feature-schedule-task-colored(rgba(228, 230, 251, 0.7), #8d91ee);
+}
+
+.feature-schedule-task-item-selected {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.feature-schedule-task-item-detail {
+  padding: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  position: absolute;
+  background: white;
+  border-radius: 12px;
+  .MuiSvgIcon-root {
+    color: #ccd5dc;
+    width: 20px;
+    height: 20px;
+  }
+  div.detail-item {
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    div.icon-container {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      margin-right: 8px;
+    }
   }
 }
 
-.common-weektable {
+.feature-schedule-weektable-time {
+}
+
+.feature-schedule-weektable {
   thead {
     tr {
       background-color: #f5f6f8;

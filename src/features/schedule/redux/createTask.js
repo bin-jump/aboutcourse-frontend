@@ -80,7 +80,7 @@ export function reducer(state, action) {
     case SCHEDULE_CREATE_TASK_FAILURE:
       return {
         ...state,
-        fetchItemsPending: false,
+        createTaskPending: false,
         lastError: action.data.error,
       };
 

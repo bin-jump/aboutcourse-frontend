@@ -54,6 +54,7 @@ function makeRequest({
             id,
             extra,
           });
+
           resolve(res);
         },
         (err) => {
@@ -152,34 +153,6 @@ export function deleteRequest(
     id,
     extra,
   });
-}
-
-export function milisecToDate(timeLong) {
-  //timeLong *= 1000;
-  let date = new Date(timeLong);
-  const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
-  const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date);
-  const mon = new Intl.DateTimeFormat('en', { month: 'short' }).format(date);
-  return `${mon} ${day}, ${year}`;
-}
-
-export function milisecToMonDay(timeLong) {
-  let date = new Date(timeLong);
-  //const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
-  const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date);
-  const mon = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(date);
-  return `${mon}/${day}`;
-}
-
-export function milisecToTime(timeLong) {
-  let date = new Date(timeLong);
-  //const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
-  const hour = new Intl.DateTimeFormat('en', {
-    hour: '2-digit',
-    hour12: false,
-  }).format(date);
-  const min = new Intl.DateTimeFormat('en', { minute: '2-digit' }).format(date);
-  return `${hour}:${min}`;
 }
 
 export function extractUrlKey(path) {

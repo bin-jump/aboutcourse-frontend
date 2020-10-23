@@ -27,14 +27,16 @@ import './NewTask.less';
 
 export const initDate = () => {
   let d = new Date();
+  //d = new Date(d.getTime() - d.getTimezoneOffset() * 60 * 1000);
   d.setMinutes(0);
+  d.setSeconds(0);
+  d.setMilliseconds(0);
   return d;
 };
 
 export default function NewTask(props) {
   const { open, handleClickOpen, handleClose } = { ...props };
-  const [tagName, setTagName] = useState('');
-  const [task, setTask] = useState({
+  const initialTask = {
     title: '',
     startDate: initDate(),
     dueDate: initDate(),
@@ -44,7 +46,9 @@ export default function NewTask(props) {
     repeat: 'NONE',
     tags: [],
     info: '',
-  });
+  };
+  const [tagName, setTagName] = useState('');
+  const [task, setTask] = useState(initialTask);
 
   const { createTask, createTaskPending } = useCreateTask();
   const repeatList = ['NONE', 'DAY', 'WEEK'];
@@ -75,15 +79,20 @@ export default function NewTask(props) {
     setTask({ ...task, dueDate: date });
   };
 
+  const handleDialogClose = () => {
+    setTask(initialTask);
+    handleClose();
+  };
+
   const handleCreate = () => {
     createTask(task);
-    handleClose();
+    handleDialogClose();
   };
 
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={handleDialogClose}
       modal={true}
       autoDetectWindowHeight={false}
       autoScrollBodyContent={false}
@@ -93,7 +102,6 @@ export default function NewTask(props) {
         <DialogTitle>{'Create New Task'}</DialogTitle>
         <div>
           <DialogContent>
-            {/* <DialogContentText id="alert-dialog-description"></DialogContentText> */}
             <div className="schedule-newtask-item">
               <TextField
                 id="standard-basic"
@@ -204,7 +212,7 @@ export default function NewTask(props) {
           </DialogContent>
         </div>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleDialogClose} color="primary">
             Cancel
           </Button>
           <Button onClick={handleCreate} color="primary" autoFocus>

@@ -3,3 +3,25 @@
   width: auto;
   padding: 24px;
 }
+
+@progress-radius: 6px;
+@progress-height: 18px;
+.feature-schedule-tasklist-progress {
+  box-shadow: inset 0 0 3px #0ee37d;
+  border-radius: @progress-radius;
+  text-align: center;
+  position: relative;
+  height: @progress-height;
+  color: #ababab;
+  div {
+    border-radius: @progress-radius;
+    height: @progress-height;
+    position: absolute;
+  }
+}
+
+.feature-schedule-tasklist-row-selected {
+  //background: gray;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transform: scale(1.01);
+}

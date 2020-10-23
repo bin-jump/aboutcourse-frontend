@@ -21,7 +21,8 @@ import AddIcon from '@material-ui/icons/Add';
 import ClearIcon from '@material-ui/icons/Clear';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { initDate, TimePicker, DatePicker } from './NewTask';
-import { getWeekNames, getMinutes } from '../../common/util';
+import { getWeekNames, getMinutes, toLocalTime } from '../../common/util';
+import { useAddLecture } from '../redux/hooks';
 import './NewTask.less';
 
 const formatTimeInterval = (lecture) => {
@@ -35,6 +36,8 @@ export default function NewLecture(props) {
     start: initDate(),
     end: initDate(),
   });
+
+  const { addLecture, addLecturePending } = useAddLecture();
 
   const [lecture, setLecture] = useState({
     title: '',
@@ -64,6 +67,11 @@ export default function NewLecture(props) {
       .slice(0, idx)
       .concat(lecture.intervals.slice(idx + 1, lecture.intervals.length));
     setLecture({ ...lecture, intervals: removed });
+  };
+
+  const handleAdd = () => {
+    addLecture(lecture);
+    handleClose();
   };
 
   return (
@@ -216,7 +224,7 @@ export default function NewLecture(props) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary" autoFocus>
+          <Button onClick={handleAdd} color="primary" autoFocus>
             Create
           </Button>
         </DialogActions>
