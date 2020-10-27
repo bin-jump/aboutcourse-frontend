@@ -275,7 +275,7 @@ export default function WeekTable(props) {
             }}
             onClick={(e) => handleTaskSelect(item)}
           >
-            {`${item.title} ${item.id}`}
+            {`${item.title}`}
           </div>
         ))}
         {makeDetail(selectedTask, config, handleTaskSelect)}

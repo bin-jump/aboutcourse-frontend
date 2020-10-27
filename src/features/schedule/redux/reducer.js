@@ -2,6 +2,9 @@ import { reducer as fetchItemsReducer } from './fetchItems';
 import { reducer as createTaskReducer } from './createTask';
 import { reducer as removeTaskReducer } from './removeTask';
 import { reducer as addLectureReducer } from './addLecture';
+import { reducer as removeLectureReducer } from './removeLecture';
+import { reducer as autocompleteLectureReducer } from './autocompleteLecture';
+import { reducer as autocompleteTageReducer } from './autocompleteTag';
 
 const initialState = {
   items: [],
@@ -10,6 +13,10 @@ const initialState = {
   removeTaskPending: false,
   addLecturePending: false,
   removeLecturePending: false,
+  autocompleteLectures: [],
+  autocompleteLecturesPending: false,
+  autocompleteTags: [],
+  autocompleteTagsPending: false,
   lastError: null,
 };
 
@@ -18,6 +25,9 @@ const reducers = [
   createTaskReducer,
   removeTaskReducer,
   addLectureReducer,
+  removeLectureReducer,
+  autocompleteLectureReducer,
+  autocompleteTageReducer,
 ];
 
 export default function reducer(state = initialState, action) {

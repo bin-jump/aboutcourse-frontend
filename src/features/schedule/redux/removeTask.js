@@ -55,7 +55,11 @@ export function reducer(state, action) {
     case SCHEDULE_REMOVE_TASK_SUCCESS:
       return {
         ...state,
-        items: [...state.items.filter((item) => item.id != action.id)],
+        items: [
+          ...state.items.filter(
+            (item) => !(item.id == action.id && item.taskType == 'TASK'),
+          ),
+        ],
         removeTaskPending: false,
         lastError: null,
       };

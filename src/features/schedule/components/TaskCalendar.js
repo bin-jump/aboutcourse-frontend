@@ -7,6 +7,9 @@ import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import TodayIcon from '@material-ui/icons/Today';
+import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
+import SchoolIcon from '@material-ui/icons/School';
 import NewTask from './NewTask';
 import NewLecture from './NewLecture';
 import WeekTable, { getWeekStartEnd } from './WeekTable';
@@ -43,7 +46,7 @@ export default function TaskCalendar(props) {
   const [curDate, setCurDate] = useState(today());
   const [weekStart, weekEnd] = getWeekStartEnd(curDate);
 
-  const [open, setOpen] = useState(false);
+  const [openNewTask, setOpenNewTask] = useState(false);
   const [openNewLecture, setOpenNewLecture] = useState(false);
 
   const currentWeekTasks = (task) => {
@@ -64,12 +67,12 @@ export default function TaskCalendar(props) {
     setCurDate(new Date(newDate));
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleTaskOpen = () => {
+    setOpenNewTask(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleTaskClose = () => {
+    setOpenNewTask(false);
   };
 
   const handleLectureOpen = () => {
@@ -124,8 +127,8 @@ export default function TaskCalendar(props) {
     <div>
       <Paper square variant="outlined">
         <Grid container>
-          <Grid item xs={4} />
-          <Grid item xs={3} className="feature-schedule-cal-title">
+          <Grid item xs={5} />
+          <Grid item xs={3} className="schedule-cal-title">
             <div style={{ display: 'flex' }}>
               <Typography
                 variant="h6"
@@ -136,25 +139,47 @@ export default function TaskCalendar(props) {
               <Typography variant="h6">{curDate.getFullYear()}</Typography>
             </div>
           </Grid>
-          <Grid item xs={2}>
-            <div style={{ display: 'flex' }}>
-              <Button onClick={(e) => setCurDate(today())}>Today</Button>
-              <IconButton onClick={(e) => decreaseWeek()}>
-                <KeyboardArrowLeftIcon />
-              </IconButton>
-              <IconButton onClick={(e) => increaseWeek()}>
-                <KeyboardArrowRightIcon />
-              </IconButton>
+          <Grid item xs={3}>
+            <div className="schedule-cal-header-operation">
+              <div
+                style={{
+                  display: 'flex',
+                  background: '#e5fbf1',
+                  padding: 5,
+                  borderRadius: 10,
+                  marginRight: 20,
+                }}
+              >
+                <Button onClick={(e) => setCurDate(today())}>Today</Button>
+                <Button
+                  style={{ color: '#17df7d' }}
+                  onClick={(e) => decreaseWeek()}
+                >
+                  <KeyboardArrowLeftIcon />
+                </Button>
+                <Button
+                  style={{ color: '#17df7d' }}
+                  onClick={(e) => increaseWeek()}
+                >
+                  <KeyboardArrowRightIcon />
+                </Button>
+              </div>
+
+              <Button
+                className="operation-icon"
+                aria-label="add"
+                onClick={handleTaskOpen}
+              >
+                <PlaylistAddIcon />
+              </Button>
+              <Button
+                className="operation-icon"
+                aria-label="add"
+                onClick={handleLectureOpen}
+              >
+                <SchoolIcon />
+              </Button>
             </div>
-          </Grid>
-          <Grid item xs={1} />
-          <Grid item xs={2}>
-            <IconButton aria-label="add" onClick={handleClickOpen}>
-              <AddCircleIcon />
-            </IconButton>
-            <IconButton aria-label="add" onClick={handleLectureOpen}>
-              <AddCircleIcon />
-            </IconButton>
           </Grid>
         </Grid>
         <WeekTable
@@ -166,12 +191,14 @@ export default function TaskCalendar(props) {
         />
       </Paper>
       <NewTask
-        open={open}
-        handleClickOpen={handleClickOpen}
-        handleClose={handleClose}
+        open={openNewTask}
+        tasks={tasks}
+        handleClickOpen={handleTaskOpen}
+        handleClose={handleTaskClose}
       />
       <NewLecture
         open={openNewLecture}
+        tasks={tasks}
         handleClickOpen={handleLectureOpen}
         handleClose={handleLectureClose}
       />

@@ -12,6 +12,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -22,7 +23,7 @@ import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import { getWeek, getWeekNames } from '../../common/util';
-import { useCreateTask } from '../redux/hooks';
+import { useCreateTask, useAutocompleteTag } from '../redux/hooks';
 import './NewTask.less';
 
 export const initDate = () => {
@@ -47,10 +48,21 @@ export default function NewTask(props) {
     tags: [],
     info: '',
   };
-  const [tagName, setTagName] = useState('');
+  const initialTag = {
+    id: null,
+    label: '',
+  };
+
+  const [newTag, setNewTag] = useState({ id: null, label: '' });
   const [task, setTask] = useState(initialTask);
 
   const { createTask, createTaskPending } = useCreateTask();
+  const {
+    tags,
+    autocompleteTags,
+    autocompleteTagsPending,
+  } = useAutocompleteTag();
+
   const repeatList = ['NONE', 'DAY', 'WEEK'];
 
   const handleTagDelete = (chipToDelete) => {
@@ -58,13 +70,16 @@ export default function NewTask(props) {
     setTask({ ...task, tags: newList });
   };
 
-  const handleTagAdd = (label) => {
-    if (task.tags.filter((e) => e.label === label).length > 0 || !label) {
+  const handleTagAdd = (newTag) => {
+    if (
+      task.tags.filter((e) => e.label === newTag.label).length > 0 ||
+      !newTag.label
+    ) {
       return;
     }
-    let newList = [{ label }, ...task.tags];
+    let newList = [newTag, ...task.tags];
     setTask({ ...task, tags: newList });
-    setTagName('');
+    setNewTag(initialTag);
   };
 
   const handleRepeatChange = (event) => {
@@ -89,6 +104,19 @@ export default function NewTask(props) {
     handleDialogClose();
   };
 
+  const handleTagChange = (e) => {
+    setNewTag({ ...newTag, label: e.target.value });
+    autocompleteTags(e.target.value);
+  };
+
+  const handleInputChange = (e, v) => {
+    if (typeof v === 'string' || v instanceof String) {
+      setNewTag({ ...newTag, label: e.target.value });
+    } else {
+      setNewTag(v);
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -99,7 +127,7 @@ export default function NewTask(props) {
       contentStyle={{ width: '100%', maxWidth: 'none' }}
     >
       <div style={{ width: 500 }}>
-        <DialogTitle>{'Create New Task'}</DialogTitle>
+        <DialogTitle>{'New Task'}</DialogTitle>
         <div>
           <DialogContent>
             <div className="schedule-newtask-item">
@@ -168,36 +196,62 @@ export default function NewTask(props) {
                 handleTimeChange={(d) => setTask({ ...task, endTime: d })}
               />
             </div>
-            <div className="schedule-newtask-item"></div>
-            <div className="schedule-newtask-item">
-              <TextField
-                label="tag name"
-                variant="outlined"
-                style={{ marginRight: 20 }}
-                value={tagName}
-                onChange={(e) => setTagName(e.target.value)}
-              />
-              <Button
-                variant="outlined"
-                startIcon={<AddIcon />}
-                variant="contained"
-                color="primary"
-                onClick={(e) => handleTagAdd(tagName)}
+            <div
+              className="schedule-newtask-item"
+              style={{ display: 'inline-block', width: '100%' }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  verticalAlign: 'middle',
+                  alignItems: 'center',
+                }}
               >
-                Add
-              </Button>
-            </div>
-            <div className="schedule-newtask-item" style={{ display: 'block' }}>
-              {task.tags.map((data) => (
-                <Chip
-                  style={{ marginRight: 12, marginBottom: 8 }}
-                  variant="outlined"
-                  color="secondary"
-                  label={data.label}
-                  onDelete={(e) => handleTagDelete(data)}
+                <Autocomplete
+                  freeSolo
+                  options={tags}
+                  getOptionLabel={(option) => option.label}
+                  style={{ width: '100%', marginRight: 26 }}
+                  onChange={(e, v) => {
+                    handleInputChange(e, v);
+                  }}
+                  onInputChange={(e) => handleTagChange(e)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Tag Name"
+                      margin="normal"
+                      variant="outlined"
+                    />
+                  )}
                 />
-              ))}
+                <Button
+                  style={{ height: 55, width: 100 }}
+                  variant="outlined"
+                  startIcon={<AddIcon />}
+                  variant="contained"
+                  color="primary"
+                  onClick={(e) => handleTagAdd(newTag)}
+                >
+                  Add
+                </Button>
+              </div>
+              <div>
+                {task.tags.map((data) => (
+                  <Chip
+                    style={{ marginRight: 12, marginBottom: 8 }}
+                    variant="outlined"
+                    color="secondary"
+                    label={data.label}
+                    onDelete={(e) => handleTagDelete(data)}
+                  />
+                ))}
+              </div>
             </div>
+            {/* <div
+              className="schedule-newtask-item"
+              style={{ display: 'block' }}
+            ></div> */}
             <div className="schedule-newtask-item">
               <TextField
                 fullWidth

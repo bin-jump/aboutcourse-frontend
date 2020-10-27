@@ -10,7 +10,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import Paper from '@material-ui/core/Paper';
 import { PendIconButton } from '../../common';
 import { getMinutes, getWeek, mergeDate } from '../../common/util';
-import { useRemoveTask } from '../redux/hooks';
+import { useRemoveTask, useRemoveLecture } from '../redux/hooks';
 import './TaskList.less';
 
 function Tag(props) {
@@ -73,7 +73,6 @@ const numberOfWeekDay = (startDay, endDay, day) => {
   endDay = new Date(
     endDay.getTime() - ((getWeek(endDay) - day + 7) % 7) * DAYMILI,
   );
-  console.log(startDay, endDay);
 
   return (
     Math.floor((endDay.getTime() - startDay.getTime()) / (7 * DAYMILI)) + 1
@@ -170,15 +169,17 @@ function State(props) {
 export default function TaskList(props) {
   const { tasks, selected, handleSelect } = { ...props };
   const { removeTask, removeTaskPending } = useRemoveTask();
+  const { removeLecture, removeLecturePending } = useRemoveLecture();
 
   const formatDate = (date) => {
     return `${date.getMonth() + 1}/${date.getDate()}, ${date.getFullYear()}`;
   };
 
   const formatPeriod = (task) => {
-    return !task.period
-      ? `${formatDate(task.startDate)}`
-      : `${formatDate(task.startDate)} ~ ${formatDate(task.dueDate)}`;
+    return (task.period && task.taskType == 'TASK') ||
+      task.taskType == 'LECTURE'
+      ? `${formatDate(task.startDate)} ~ ${formatDate(task.dueDate)}`
+      : `${formatDate(task.startDate)}`;
   };
 
   const formatTime = (task) => {
@@ -188,9 +189,14 @@ export default function TaskList(props) {
     return ``;
   };
 
-  const handleDelete = (e, id) => {
-    removeTask(id);
-    if (id == selected) {
+  const handleDelete = (e, task) => {
+    if (task.taskType == 'TASK') {
+      removeTask(task.id);
+    } else {
+      removeLecture(task.id);
+    }
+
+    if (task.id == selected) {
       handleSelect(id);
     }
     e.stopPropagation();
@@ -243,7 +249,7 @@ export default function TaskList(props) {
               <TableCell align="center">
                 <PendIconButton
                   disabled={removeTaskPending}
-                  onClick={(e) => handleDelete(e, item.id)}
+                  onClick={(e) => handleDelete(e, item)}
                 >
                   <DeleteForeverIcon />
                 </PendIconButton>

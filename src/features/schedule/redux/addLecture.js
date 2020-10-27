@@ -68,7 +68,7 @@ export function reducer(state, action) {
       let lecture = {
         ...action.data.data,
         startDate: new Date(action.data.data.startDate),
-        endDate: new Date(action.data.data.endDate),
+        dueDate: new Date(action.data.data.dueDate),
         intervals: action.data.data.intervals.map((item) => {
           return {
             ...item,

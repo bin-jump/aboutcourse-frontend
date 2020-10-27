@@ -22,7 +22,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { initDate, TimePicker, DatePicker } from './NewTask';
 import { getWeekNames, getMinutes, toLocalTime } from '../../common/util';
-import { useAddLecture } from '../redux/hooks';
+import { useAddLecture, useAutocompleteLecture } from '../redux/hooks';
 import './NewTask.less';
 
 const formatTimeInterval = (lecture) => {
@@ -30,7 +30,14 @@ const formatTimeInterval = (lecture) => {
 };
 
 export default function NewLecture(props) {
-  const { open, handleClickOpen, handleClose } = { ...props };
+  const { open, handleClickOpen, handleClose, tasks } = { ...props };
+  const initialLecture = {
+    title: '',
+    startDate: initDate(),
+    dueDate: initDate(),
+    intervals: [],
+    info: '',
+  };
   const [timeInterval, setTimeInterval] = useState({
     day: 1,
     start: initDate(),
@@ -38,14 +45,13 @@ export default function NewLecture(props) {
   });
 
   const { addLecture, addLecturePending } = useAddLecture();
+  const {
+    lectures,
+    autocompleteLectures,
+    autocompleteLecturesPending,
+  } = useAutocompleteLecture();
 
-  const [lecture, setLecture] = useState({
-    title: '',
-    startDate: initDate(),
-    dueDate: initDate(),
-    intervals: [],
-    info: '',
-  });
+  const [lecture, setLecture] = useState(initialLecture);
 
   const handleStartDateChange = (date) => {
     setTimeInterval({ ...timeInterval, start: date });
@@ -70,34 +76,61 @@ export default function NewLecture(props) {
   };
 
   const handleAdd = () => {
+    if (
+      tasks.filter(
+        (item) => item.taskType == 'LECTURE' && item.id == lecture.id,
+      ).length > 0
+    ) {
+      return;
+    }
     addLecture(lecture);
+    handleDialogClose();
+  };
+
+  const handleDialogClose = () => {
+    setLecture(initialLecture);
     handleClose();
   };
+
+  const handleTitleChange = (e) => {
+    setLecture({ ...lecture, title: e.target.value });
+    autocompleteLectures(e.target.value);
+  };
+
+  const handleInputChange = (e, v) => {
+    if (typeof v === 'string' || v instanceof String) {
+      setLecture({ ...lecture, title: e.target.value });
+    } else {
+      let newState = v != null ? v : initialLecture;
+      setLecture(newState);
+    }
+  };
+
+  const existedLecture = lecture.hasOwnProperty('id');
 
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={handleDialogClose}
       modal={true}
       autoDetectWindowHeight={false}
       autoScrollBodyContent={false}
       contentStyle={{ width: '100%', maxWidth: 'none' }}
     >
       <div style={{ width: 500 }}>
-        <DialogTitle>{'Create New Lecture'}</DialogTitle>
+        <DialogTitle>{'New Lecture'}</DialogTitle>
         <div>
           <DialogContent>
             <div className="schedule-newtask-item">
               <Autocomplete
-                //label="Lecture Name"
                 freeSolo
-                options={[{ title: 'aaa' }, { title: 'aabb' }]}
+                options={lectures}
                 getOptionLabel={(option) => option.title}
                 style={{ width: '100%' }}
-                onChange={(e, v) => {}}
-                onInputChange={(e) =>
-                  setLecture({ ...lecture, title: e.target.value })
-                }
+                onChange={(e, v) => {
+                  handleInputChange(e, v);
+                }}
+                onInputChange={(e) => handleTitleChange(e)}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -113,6 +146,7 @@ export default function NewLecture(props) {
                 Time Span:
               </Typography>
               <DatePicker
+                disabled={existedLecture}
                 lable={'Start'}
                 date={lecture.startDate}
                 handleDateChange={(d) =>
@@ -122,6 +156,7 @@ export default function NewLecture(props) {
               />
               <div style={{ margin: 'auto' }}>~</div>
               <DatePicker
+                disabled={existedLecture}
                 lable={'End'}
                 date={lecture.dueDate}
                 handleDateChange={(d) => setLecture({ ...lecture, dueDate: d })}
@@ -130,6 +165,7 @@ export default function NewLecture(props) {
             </div>
             <div className="schedule-newtask-item">
               <IconButton
+                disabled={existedLecture}
                 style={{
                   marginTop: 12,
                   marginRight: 18,
@@ -145,6 +181,7 @@ export default function NewLecture(props) {
               <FormControl>
                 <FormHelperText>Week</FormHelperText>
                 <Select
+                  disabled={existedLecture}
                   value={timeInterval.day}
                   onChange={(e) =>
                     setTimeInterval({ ...timeInterval, day: e.target.value })
@@ -157,6 +194,7 @@ export default function NewLecture(props) {
                 </Select>
               </FormControl>
               <TimePicker
+                disabled={existedLecture}
                 lable={'Start'}
                 date={timeInterval.start}
                 handleTimeChange={handleStartDateChange}
@@ -164,6 +202,7 @@ export default function NewLecture(props) {
               />
               <div style={{ margin: 'auto' }}>~</div>
               <TimePicker
+                disabled={existedLecture}
                 lable={'End'}
                 date={timeInterval.end}
                 handleTimeChange={handleDueDateChange}
@@ -195,7 +234,10 @@ export default function NewLecture(props) {
                           {formatTimeInterval(item)}
                         </TableCell>
                         <TableCell align="center">
-                          <IconButton onClick={(e) => handleDeleteInterval(i)}>
+                          <IconButton
+                            disabled={existedLecture}
+                            onClick={(e) => handleDeleteInterval(i)}
+                          >
                             <ClearIcon />
                           </IconButton>
                         </TableCell>
@@ -207,6 +249,7 @@ export default function NewLecture(props) {
             </div>
             <div className="schedule-newtask-item">
               <TextField
+                disabled={existedLecture}
                 fullWidth
                 label="Infomation"
                 multiline
@@ -221,7 +264,7 @@ export default function NewLecture(props) {
           </DialogContent>
         </div>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleDialogClose} color="primary">
             Cancel
           </Button>
           <Button onClick={handleAdd} color="primary" autoFocus>
