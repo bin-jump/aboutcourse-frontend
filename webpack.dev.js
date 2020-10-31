@@ -12,7 +12,7 @@ const devConfig = {
     port: 3001,
     historyApiFallback: true,
     proxy: {
-      '*': 'http://localhost:8081',
+      '**/api/**': 'http://localhost:8081',
     },
     headers: {
       'Access-Control-Allow-Origin': '*',

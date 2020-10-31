@@ -125,7 +125,7 @@ export default function TaskCalendar(props) {
 
   return (
     <div>
-      <Paper square variant="outlined">
+      <Paper>
         <Grid container>
           <Grid item xs={5} />
           <Grid item xs={3} className="schedule-cal-title">

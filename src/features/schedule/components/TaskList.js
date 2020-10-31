@@ -205,11 +205,7 @@ export default function TaskList(props) {
   const header = ['Task', 'Period', 'Time', 'State', 'Tag', 'Action'];
 
   return (
-    <Paper
-      square
-      className="feature-schedule-tasklist-container"
-      variant="outlined"
-    >
+    <Paper className="feature-schedule-tasklist-container">
       <div>
         <Typography variant="h6" style={{ fontWeight: 'bold' }}>
           Lecture and Task
