@@ -1,36 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import UpdateIcon from '@material-ui/icons/Update';
-import StarIcon from '@material-ui/icons/Star';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import StarHalfIcon from '@material-ui/icons/StarHalf';
+import Score from './Score';
 import './Style.less';
-
-function Score(props) {
-  const { value } = { ...props };
-  const val = value || 0;
-
-  const resolveStart = (i) => {
-    //i += 1;
-    if (i * 2 + 1 === val) {
-      return <StarHalfIcon />;
-    }
-    if (i * 2 <= val) {
-      return <StarIcon />;
-    }
-    return <StarBorderIcon />;
-  };
-
-  return (
-    <div className="lecture-star">
-      {[...Array(5).keys()].map((item, i) => (
-        <>{resolveStart(i)}</>
-      ))}
-    </div>
-  );
-}
 
 export default function SearchHead(props) {
   const { lectures } = { ...props };
@@ -47,7 +22,10 @@ export default function SearchHead(props) {
             //minHeight: 100,
           }}
         >
-          <Typography variant="h5">{item.name}</Typography>
+          <Link to={`/lecture/2`}>
+            <Typography variant="h5">{item.name}</Typography>
+          </Link>
+
           <div style={{ marginTop: -6, marginBottom: 5 }}>
             <Typography
               style={{ color: '#c9c8ca', display: 'contents' }}

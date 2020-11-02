@@ -7,7 +7,7 @@ import history from './common/history';
 import Schedule from './features/schedule/Schedule';
 import Container from './features/frame/Container';
 import Account from './features/account/Account';
-import Lecture from './features/lecture/Lecture';
+import LectureIndex from './features/lecture/Index';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
@@ -35,8 +35,8 @@ export default function App() {
             <MuiThemeProvider theme={theme}>
               <Provider store={store}>
                 <Route path="/" exact component={Schedule} />
-                <Route path="/account" exact component={Account} />
-                <Route path="/lecture" exact component={Lecture} />
+                <Route path="/account" component={Account} />
+                <Route path="/lecture" component={LectureIndex} />
 
                 <CssBaseline />
               </Provider>
