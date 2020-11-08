@@ -66,7 +66,7 @@ export function reducer(state, action) {
       };
 
     case SCHEDULE_AUTOCOMPLETE_TAG_SUCCESS:
-      if (action.extra.ersion < autotag_request_version) {
+      if (action.extra.version < autotag_request_version) {
         return state;
       }
       return {

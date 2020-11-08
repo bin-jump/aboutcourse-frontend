@@ -84,7 +84,7 @@ export function reducer(state, action) {
       };
 
     case SCHEDULE_AUTOCOMPLETE_LECTURE_SUCCESS:
-      if (action.extra.ersion < autolecture_request_version) {
+      if (action.extra.version < autolecture_request_version) {
         return state;
       }
       return {

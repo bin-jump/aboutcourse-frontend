@@ -44,9 +44,7 @@ function Comment(props) {
           <Button>Reply</Button>
         )}
       </div>
-      <div style={{ paddingLeft: 42 }}>
-        {isDiscussion ? <Comment showReply /> : null}
-      </div>
+      <div style={{ paddingLeft: 42 }}>{isDiscussion ? <Comment /> : null}</div>
     </div>
   );
 }
